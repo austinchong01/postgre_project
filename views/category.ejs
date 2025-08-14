@@ -1,0 +1,418 @@
+<%
+// Helper object to convert color names to hex codes
+const colorMap = {
+    'white': '#ffffff', 'black': '#000000', 'red': '#ff0000', 'blue': '#0000ff',
+    'green': '#008000', 'yellow': '#ffff00', 'pink': '#ffc0cb', 'purple': '#800080',
+    'orange': '#ffa500', 'gray': '#808080', 'grey': '#808080', 'brown': '#a52a2a',
+    'navy': '#000080', 'dark blue': '#00008b', 'light blue': '#add8e6',
+    'beige': '#f5f5dc', 'khaki': '#f0e68c', 'olive': '#808000'
+};
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= categoryName %> - Clothing Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-right: 1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-tag {
+            background: #f0f0f0;
+            color: #555;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-tag:hover {
+            background: #764ba2;
+            color: white;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .item-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 50px;
+        }
+
+        .detail-value {
+            color: #777;
+        }
+
+        .size-badge {
+            background: #f39c12;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .color-swatch {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .category-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><%= categoryName %></h1>
+            <p class="subtitle"><%= items.length %> items in this category</p>
+        </header>
+
+        <div class="nav-links">
+            <a href="/" class="nav-link">← All Items</a>
+            <a href="/categories" class="nav-link">Categories</a>
+        </div>
+
+        <% if (items && items.length > 0) { %>
+            <!-- Category Statistics -->
+            <div class="category-stats">
+                <div class="stat-item">
+                    <div class="stat-number"><%= items.length %></div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$<%= items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2) %></div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$<%= Math.min(...items.map(item => parseFloat(item.price))).toFixed(2) %></div>
+                    <div class="stat-label">Lowest Price</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">$<%= Math.max(...items.map(item => parseFloat(item.price))).toFixed(2) %></div>
+                    <div class="stat-label">Highest Price</div>
+                </div>
+            </div>
+
+            <!-- Filter Options -->
+            <div class="filters">
+                <div class="filter-group">
+                    <div class="filter-label">Sizes:</div>
+                    <div class="filter-tags">
+                        <div class="filter-tag active" data-filter="size" data-value="all">All Sizes</div>
+                        <% [...new Set(items.map(item => item.size))].sort().forEach(size => { %>
+                            <div class="filter-tag" data-filter="size" data-value="<%= size %>"><%= size %></div>
+                        <% }) %>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Colors:</div>
+                    <div class="filter-tags">
+                        <div class="filter-tag active" data-filter="color" data-value="all">All Colors</div>
+                        <% [...new Set(items.map(item => item.color))].sort().forEach(color => { %>
+                            <div class="filter-tag" data-filter="color" data-value="<%= color %>"><%= color %></div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Grid -->
+            <div class="items-grid" id="itemsGrid">
+                <% items.forEach(item => { %>
+                    <div class="item-card" onclick="window.location.href='/item/<%= item.id %>'" data-size="<%= item.size %>" data-color="<%= item.color %>">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-name"><%= item.name %></div>
+                            </div>
+                            <div class="item-price">$<%= parseFloat(item.price).toFixed(2) %></div>
+                        </div>
+                        
+                        <div class="item-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Size:</span>
+                                <span class="size-badge"><%= item.size %></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Color:</span>
+                                <span class="detail-value">
+                                    <%= item.color %>
+                                    <span class="color-swatch" style="background-color: <%= colorMap[item.color.toLowerCase()] || '#cccccc' %>;"></span>
+                                </span>
+                            </div>
+                            <% if (item.created_at) { %>
+                            <div class="detail-item" style="grid-column: 1 / -1;">
+                                <span class="detail-label">Added:</span>
+                                <span class="detail-value"><%= new Date(item.created_at).toLocaleDateString() %></span>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <h2>No Items Found</h2>
+                <p>This category doesn't have any items yet.</p>
+                <a href="/" class="nav-link" style="margin-top: 1rem;">View All Items</a>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterTags = document.querySelectorAll('.filter-tag');
+            const itemCards = document.querySelectorAll('.item-card');
+            
+            let currentFilters = {
+                size: 'all',
+                color: 'all'
+            };
+
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const filterType = this.dataset.filter;
+                    const filterValue = this.dataset.value;
+                    
+                    // Update active state for this filter group
+                    const sameGroupTags = document.querySelectorAll(`[data-filter="${filterType}"]`);
+                    sameGroupTags.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current filters
+                    currentFilters[filterType] = filterValue;
+                    
+                    // Apply filters
+                    itemCards.forEach(card => {
+                        let show = true;
+                        
+                        if (currentFilters.size !== 'all' && card.dataset.size !== currentFilters.size) {
+                            show = false;
+                        }
+                        
+                        if (currentFilters.color !== 'all' && card.dataset.color !== currentFilters.color) {
+                            show = false;
+                        }
+                        
+                        card.style.display = show ? 'block' : 'none';
+                    });
+                });
+            });
+
+            // Item card click effects
+            itemCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

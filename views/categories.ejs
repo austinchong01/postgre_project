@@ -1,0 +1,311 @@
+<%
+// Helper object to convert color names to hex codes
+const colorMap = {
+    'white': '#ffffff', 'black': '#000000', 'red': '#ff0000', 'blue': '#0000ff',
+    'green': '#008000', 'yellow': '#ffff00', 'pink': '#ffc0cb', 'purple': '#800080',
+    'orange': '#ffa500', 'gray': '#808080', 'grey': '#808080', 'brown': '#a52a2a',
+    'navy': '#000080', 'dark blue': '#00008b', 'light blue': '#add8e6',
+    'beige': '#f5f5dc', 'khaki': '#f0e68c', 'olive': '#808000'
+};
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - Clothing Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-right: 1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .category-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .category-count {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .price-range {
+            background: #e8f5e8;
+            color: #27ae60;
+        }
+
+        .size-variety {
+            background: #fff3e0;
+            color: #f39c12;
+        }
+
+        .recent-items {
+            margin-top: 1.5rem;
+        }
+
+        .recent-items h4 {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .recent-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.8rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .view-all-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                text-align: center;
+            }
+
+            .nav-link {
+                display: block;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Categories</h1>
+            <p class="subtitle">Browse your clothing by type</p>
+        </header>
+
+        <div class="nav-links">
+            <a href="/" class="nav-link">← Back to Inventory</a>
+        </div>
+
+        <% if (categories && categories.length > 0) { %>
+            <div class="categories-grid">
+                <% categories.forEach(category => { %>
+                    <div class="category-card" onclick="window.location.href='/category/<%= encodeURIComponent(category.type) %>'">
+                        <div class="category-header">
+                            <div class="category-name"><%= category.type %></div>
+                            <div class="category-count"><%= category.count %> items</div>
+                        </div>
+                        
+                        <div class="category-stats">
+                            <div class="stat-box price-range">
+                                <div class="stat-number">$<%= category.minPrice %> - $<%= category.maxPrice %></div>
+                                <div class="stat-label">Price Range</div>
+                            </div>
+                            <div class="stat-box size-variety">
+                                <div class="stat-number"><%= category.sizes %></div>
+                                <div class="stat-label">Size Options</div>
+                            </div>
+                        </div>
+
+                        <% if (category.recentItems && category.recentItems.length > 0) { %>
+                            <div class="recent-items">
+                                <h4>Recent Items:</h4>
+                                <% category.recentItems.slice(0, 3).forEach(item => { %>
+                                    <div class="recent-item">
+                                        <div class="item-info">
+                                            <div class="item-name"><%= item.name %></div>
+                                            <div class="item-details"><%= item.size %> • <%= item.color %></div>
+                                        </div>
+                                        <div class="item-price">$<%= parseFloat(item.price).toFixed(2) %></div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } %>
+
+                        <a href="/category/<%= encodeURIComponent(category.type) %>" class="view-all-btn">
+                            View All <%= category.type %> Items
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <h2>No Categories Found</h2>
+                <p>Add some clothing items to see categories here!</p>
+                <a href="/" class="nav-link" style="margin-top: 1rem;">Go to Inventory</a>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>
