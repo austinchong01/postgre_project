@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Clothing Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .error-details {
+            background: #f8f9ff;
+            border-left: 4px solid #e74c3c;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 10px 10px 0;
+            text-align: left;
+        }
+
+        .error-code {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-button {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 1rem;
+            }
+
+            .error-card {
+                padding: 2rem 1rem;
+            }
+            
+            .error-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">🚨</div>
+            <h1 class="error-title">
+                <% if (error && error.status) { %>
+                    Error <%= error.status %>
+                <% } else { %>
+                    Oops! Something went wrong
+                <% } %>
+            </h1>
+            
+            <p class="error-message">
+                <%= message || 'An unexpected error occurred while processing your request.' %>
+            </p>
+
+            <% if (error && (error.status || error.stack)) { %>
+                <div class="error-details">
+                    <% if (error.status) { %>
+                        <div class="error-code">Status Code: <%= error.status %></div>
+                    <% } %>
+                    <div class="error-description">
+                        <% if (error.status === 404) { %>
+                            The page or resource you're looking for doesn't exist or has been moved.
+                        <% } else if (error.status === 500) { %>
+                            An internal server error occurred. Please try again later.
+                        <% } else { %>
+                            Please check your request and try again.
+                        <% } %>
+                    </div>
+            <% } %>
+
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">Go to Home</a>
+                <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+            </div>
+
+            <a href="/" class="back-button">← Return to Inventory</a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect after 10 seconds if it's a 404
+        <% if (error && error.status === 404) { %>
+            setTimeout(function() {
+                window.location.href = '/';
+            }, 10000);
+        <% } %>
+    </script>
+</body>
+</html>
+                </div>

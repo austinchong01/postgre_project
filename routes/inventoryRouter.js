@@ -16,4 +16,25 @@ router.get('/category/:category', inventoryController.getCategoryItems);
 // Item details page - show single item with full details
 router.get('/item/:id', inventoryController.getItemDetails);
 
+// CREATE routes
+
+// Display form for creating a new item
+router.get('/create', inventoryController.getCreateForm);
+
+// Handle creating a new item
+router.post('/create', inventoryController.createItem);
+
+// UPDATE routes
+
+// Display form for editing an existing item
+router.get('/item/:id/edit', inventoryController.getEditForm);
+
+// Handle updating an existing item
+router.post('/item/:id/edit', inventoryController.updateItem);
+
+// DELETE routes
+
+// Handle deleting an item
+router.post('/item/:id/delete', inventoryController.deleteItem);
+
 module.exports = router;

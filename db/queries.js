@@ -76,10 +76,51 @@ async function getRelatedItems(itemType, excludeId) {
   return rows;
 }
 
+// Get existing types for dropdown options
+async function getExistingTypes() {
+  const { rows } = await pool.query(
+    "SELECT DISTINCT type FROM clothing ORDER BY type"
+  );
+  return rows.map(row => row.type);
+}
+
+// Create a new item
+async function createItem(itemData) {
+  const { name, type, size, color, price } = itemData;
+  const { rows } = await pool.query(
+    "INSERT INTO clothing (name, type, size, color, price) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [name, type, size, color, price]
+  );
+  return rows[0];
+}
+
+// Update an existing item
+async function updateItem(itemId, itemData) {
+  const { name, type, size, color, price } = itemData;
+  const { rows } = await pool.query(
+    "UPDATE clothing SET name = $1, type = $2, size = $3, color = $4, price = $5 WHERE id = $6 RETURNING *",
+    [name, type, size, color, price, itemId]
+  );
+  return rows[0];
+}
+
+// Delete an item
+async function deleteItem(itemId) {
+  const { rows } = await pool.query(
+    "DELETE FROM clothing WHERE id = $1 RETURNING *",
+    [itemId]
+  );
+  return rows[0];
+}
+
 module.exports = {
   getAllInventory,
   getAllCategories,
   getItemsByCategory,
   getItemById,
   getRelatedItems,
+  getExistingTypes,
+  createItem,
+  updateItem,
+  deleteItem,
 };

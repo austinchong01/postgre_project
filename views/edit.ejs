@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit <%= item.name %> - Clothing Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-right: 1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-id {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .form-description {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .error-messages {
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-message {
+            color: #c33;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message:last-child {
+            margin-bottom: 0;
+        }
+
+        .current-values {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .current-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .current-item {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .current-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input.error,
+        .form-select.error {
+            border-color: #e74c3c;
+            background-color: #ffeaea;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .input-group .form-input {
+            padding-left: 2.5rem;
+        }
+
+        .datalist-container {
+            position: relative;
+        }
+
+        .type-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9ff;
+            color: #667eea;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .danger-zone {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .danger-title {
+            color: #dc2626;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .danger-text {
+            color: #7f1d1d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 2rem 1rem;
+            }
+
+            .form-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .current-info {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Edit Item</h1>
+            <p class="subtitle">Update the details for this item</p>
+        </header>
+
+        <div class="nav-links">
+            <a href="/item/<%= item.id %>" class="nav-link">← Back to Item</a>
+            <a href="/" class="nav-link">All Items</a>
+            <a href="/categories" class="nav-link">Categories</a>
+        </div>
+
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="form-title">Edit Item Details</h2>
+                <div class="item-id">ID: #<%= item.id %></div>
+            </div>
+
+            <div class="current-values">
+                <div class="current-title">Current Values:</div>
+                <div class="current-info">
+                    <div class="current-item">
+                        <span class="current-label">Name:</span> <%= item.name %>
+                    </div>
+                    <div class="current-item">
+                        <span class="current-label">Type:</span> <%= item.type %>
+                    </div>
+                    <div class="current-item">
+                        <span class="current-label">Size:</span> <%= item.size %>
+                    </div>
+                    <div class="current-item">
+                        <span class="current-label">Color:</span> <%= item.color %>
+                    </div>
+                    <div class="current-item">
+                        <span class="current-label">Price:</span> $<%= parseFloat(item.price).toFixed(2) %>
+                    </div>
+                </div>
+            </div>
+
+            <% if (errors && errors.length > 0) { %>
+                <div class="error-messages">
+                    <% errors.forEach(error => { %>
+                        <div class="error-message">• <%= error %></div>
+                    <% }) %>
+                </div>
+            <% } %>
+
+            <form action="/item/<%= item.id %>/edit" method="POST" id="editForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="name" class="form-label">Item Name *</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            class="form-input <%= errors && errors.some(e => e.includes('Name')) ? 'error' : '' %>"
+                            value="<%= item.name %>"
+                            placeholder="e.g., Cotton T-Shirt"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type" class="form-label">Category/Type *</label>
+                        <div class="datalist-container">
+                            <input 
+                                type="text" 
+                                id="type" 
+                                name="type" 
+                                class="form-input <%= errors && errors.some(e => e.includes('Type')) ? 'error' : '' %>"
+                                value="<%= item.type %>"
+                                placeholder="e.g., T-Shirt, Jeans, Jacket"
+                                autocomplete="off"
+                                required
+                            >
+                            <div class="type-suggestions" id="typeSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size" class="form-label">Size *</label>
+                        <select 
+                            id="size" 
+                            name="size" 
+                            class="form-select <%= errors && errors.some(e => e.includes('Size')) ? 'error' : '' %>"
+                            required
+                        >
+                            <option value="">Select Size</option>
+                            <option value="XS" <%= item.size === 'XS' ? 'selected' : '' %>>XS</option>
+                            <option value="S" <%= item.size === 'S' ? 'selected' : '' %>>S</option>
+                            <option value="M" <%= item.size === 'M' ? 'selected' : '' %>>M</option>
+                            <option value="L" <%= item.size === 'L' ? 'selected' : '' %>>L</option>
+                            <option value="XL" <%= item.size === 'XL' ? 'selected' : '' %>>XL</option>
+                            <option value="XXL" <%= item.size === 'XXL' ? 'selected' : '' %>>XXL</option>
+                            <option value="One Size" <%= item.size === 'One Size' ? 'selected' : '' %>>One Size</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color" class="form-label">Color *</label>
+                        <select 
+                            id="color" 
+                            name="color" 
+                            class="form-select <%= errors && errors.some(e => e.includes('Color')) ? 'error' : '' %>"
+                            required
+                        >
+                            <option value="">Select Color</option>
+                            <option value="White" <%= item.color === 'White' ? 'selected' : '' %>>White</option>
+                            <option value="Black" <%= item.color === 'Black' ? 'selected' : '' %>>Black</option>
+                            <option value="Red" <%= item.color === 'Red' ? 'selected' : '' %>>Red</option>
+                            <option value="Blue" <%= item.color === 'Blue' ? 'selected' : '' %>>Blue</option>
+                            <option value="Dark Blue" <%= item.color === 'Dark Blue' ? 'selected' : '' %>>Dark Blue</option>
+                            <option value="Light Blue" <%= item.color === 'Light Blue' ? 'selected' : '' %>>Light Blue</option>
+                            <option value="Green" <%= item.color === 'Green' ? 'selected' : '' %>>Green</option>
+                            <option value="Yellow" <%= item.color === 'Yellow' ? 'selected' : '' %>>Yellow</option>
+                            <option value="Pink" <%= item.color === 'Pink' ? 'selected' : '' %>>Pink</option>
+                            <option value="Purple" <%= item.color === 'Purple' ? 'selected' : '' %>>Purple</option>
+                            <option value="Orange" <%= item.color === 'Orange' ? 'selected' : '' %>>Orange</option>
+                            <option value="Gray" <%= item.color === 'Gray' ? 'selected' : '' %>>Gray</option>
+                            <option value="Brown" <%= item.color === 'Brown' ? 'selected' : '' %>>Brown</option>
+                            <option value="Navy" <%= item.color === 'Navy' ? 'selected' : '' %>>Navy</option>
+                            <option value="Beige" <%= item.color === 'Beige' ? 'selected' : '' %>>Beige</option>
+                            <option value="Olive" <%= item.color === 'Olive' ? 'selected' : '' %>>Olive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price" class="form-label">Price *</label>
+                        <div class="input-group">
+                            <span class="input-prefix">$</span>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price" 
+                                class="form-input <%= errors && errors.some(e => e.includes('Price')) ? 'error' : '' %>"
+                                value="<%= parseFloat(item.price).toFixed(2) %>"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Item</button>
+                    <a href="/item/<%= item.id %>" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+            <div class="danger-zone">
+                <div class="danger-title">⚠️ Danger Zone</div>
+                <div class="danger-text">
+                    Permanently delete this item from your inventory. This action cannot be undone.
+                </div>
+                <form action="/item/<%= item.id %>/delete" method="POST" style="display: inline;" id="deleteForm">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeInput = document.getElementById('type');
+            const typeSuggestions = document.getElementById('typeSuggestions');
+            const existingTypes = <%= JSON.stringify(existingTypes || []) %>;
+
+            // Type suggestions functionality
+            typeInput.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                const filteredTypes = existingTypes.filter(type => 
+                    type.toLowerCase().includes(value) && type.toLowerCase() !== value
+                );
+
+                if (value && filteredTypes.length > 0) {
+                    typeSuggestions.innerHTML = filteredTypes.map(type => 
+                        `<div class="suggestion-item" data-value="${type}">${type}</div>`
+                    ).join('');
+                    typeSuggestions.style.display = 'block';
+                } else {
+                    typeSuggestions.style.display = 'none';
+                }
+            });
+
+            // Handle suggestion clicks
+            typeSuggestions.addEventListener('click', function(e) {
+                if (e.target.classList.contains('suggestion-item')) {
+                    typeInput.value = e.target.dataset.value;
+                    typeSuggestions.style.display = 'none';
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!typeInput.contains(e.target) && !typeSuggestions.contains(e.target)) {
+                    typeSuggestions.style.display = 'none';
+                }
+            });
+
+            // Form validation
+            const form = document.getElementById('editForm');
+            form.addEventListener('submit', function(e) {
+                const requiredFields = ['name', 'type', 'size', 'color', 'price'];
+                let isValid = true;
+
+                requiredFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (!field.value.trim()) {
+                        field.classList.add('error');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('error');
+                    }
+                });
+
+                const price = document.getElementById('price').value;
+                if (price && (isNaN(parseFloat(price)) || parseFloat(price) <= 0)) {
+                    document.getElementById('price').classList.add('error');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields correctly.');
+                }
+            });
+
+            // Remove error styling on input
+            const inputs = document.querySelectorAll('.form-input, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+            });
+        });
+
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+</body>
+</html>

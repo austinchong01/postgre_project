@@ -438,31 +438,20 @@ const colorMap = {
                 <% } %>
 
                 <div class="action-buttons">
-                    <a href="/item/<%= item.id %>/edit" class="btn btn-primary">Edit Item</a>
-                    <a href="/category/<%= encodeURIComponent(item.type) %>" class="btn btn-secondary">View Similar Items</a>
-                    <button class="btn btn-danger" onclick="confirmDelete(<%= item.id %>)">Delete Item</button>
+                    <a href="/item/<%= item.id %>/edit" class="btn btn-primary">📝 Edit Item</a>
+                    <a href="/category/<%= encodeURIComponent(item.type) %>" class="btn btn-secondary">📂 View Similar Items</a>
+                    <form action="/item/<%= item.id %>/delete" method="POST" style="display: inline;" id="deleteForm">
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">🗑️ Delete Item</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function confirmDelete(itemId) {
+        function confirmDelete() {
             if (confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
-                // Create a form and submit it for deletion
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/item/${itemId}/delete`;
-                
-                // Add CSRF token if needed
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_method';
-                csrfInput.value = 'DELETE';
-                form.appendChild(csrfInput);
-                
-                document.body.appendChild(form);
-                form.submit();
+                document.getElementById('deleteForm').submit();
             }
         }
 
